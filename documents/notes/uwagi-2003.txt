@@ -1,0 +1,10 @@
+stereotypy w UML: notacja << >>
+
+tylko naprawdę ważne zależności między use case'ami - max kilka
+nie uwzględniamy zależności GUI
+
+<<include>> to bezwarunkowe zawieranie (częścią procesu wypełniania ankiety jest zawsze autentykacja)
+<<extend>> to warunkowe zawieranie (podczas wypełniania ankiety **mozna** skorzystac z pomocy,
+ale to nie jest "typowa" sciezka)
+
+uwaga, aktorzy to **nie** pojęcia typu: aplikacja, system, moduł.

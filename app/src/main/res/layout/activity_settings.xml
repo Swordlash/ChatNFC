@@ -1,0 +1,52 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.SettingsActivity">
+
+    <include
+        android:id="@+id/settings_toolbar"
+        layout="@layout/app_bar_layout" />
+
+    <TextView
+        android:id="@+id/text_primary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Primary Color"
+        android:textSize="60sp" />
+
+    <Button
+        android:id="@+id/change_primary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Change" />
+
+    <!--<TextView-->
+        <!--android:id="@+id/text_light"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Light Color"-->
+        <!--android:textSize="60sp" />-->
+
+    <!--<Button-->
+        <!--android:id="@+id/change_light"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Change" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/text_accent"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Accent Color"-->
+        <!--android:textSize="60sp" />-->
+
+    <!--<Button-->
+        <!--android:id="@+id/change_accent"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Change" />-->
+
+
+</LinearLayout>

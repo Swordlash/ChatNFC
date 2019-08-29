@@ -1,0 +1,20 @@
+prezentacja (10-15 min / 10-15 slajdów, ostatnie zajęcia)
+plakat
+
+specyfikacja wymagań - przypadki użycia (sposób modelowania wymagań systemu)
+określa przydatne funkcje dla użytkownika (biznesowo - logiczne, np sprzedaż akcji,
+diagram przypadków użycia w UMLu, dla 2-3 przypadków użycia pisze się scenariusze,
+i nie mają zwykle więcej niż 0.5 - 1 stronę A4),
+wymagania niefunkcjonalne (wydajność, bezpieczeństwo, skalowalność, pojemość)
+(np. obsługiwanie użytowników, jakie typy danych będą przechowywane),
+na jakich systemach operacyjnych będzie wykorzystywana dana aplikacja, 
+obowiązkowe obliczenia i szacowania dotyczące pojemności itd., również infrastruktura
+
+architektura systemu - tylko i wyłącznie diagramy (sposób 4 + 1, będzie omówione później,
+raczej w postaci 'zdroworozsądkowych' rysunków)
+
+będzie zwracana uwaga na jakość kodu, nie trzeba wielu komentarzy,
+dobre nazewnictwo, kapsułkowanie kodu
+
+konieczne są unit testy w każdym sprincie, fajnie jakby wykorzystać frameworki
+do testów automatycznych itd. (na podstawie sztucznych danych)

@@ -1,0 +1,22 @@
+tagi/branche na konkretne sprinty + opcjonalnie instrukcja do builda
+testy mają być uruchamiane podczas oddawania sprintu
+
+architektura 4 + 1 : w UML
+przypadki użycia mają specyfikować wymagania.
+
+4 widoki: development/logical/process/deployment view
+development view + logical view są obowiązkowe
+
+development view: widok komponentów systemu (component view / package diagram)
+komponenty to podsystemy, osobne binarki --> w naszym przypadku package diagram
+będzie lepszy, tzn. podział na moduły
+
+logical view: widok implementacyjny, diagram klas i stanów; wskazać
+główne moduły, ukrywamy nieistotne atrybuty; tylko główne klasy,
+osobny diagram dla każdego modułu: uwaga na czytelność
+
+warto zrobić process view: komunikacja między procesami i wątkami,
+może wskazywać obciążenie telefonu
+
+deployment view jest OK, ale musi być jako UML
+

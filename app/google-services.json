@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1007211270652",
+    "firebase_url": "https://chatnfc-app.firebaseio.com",
+    "project_id": "chatnfc-app",
+    "storage_bucket": "chatnfc-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1007211270652:android:46f42f3b523cd3fe",
+        "android_client_info": {
+          "package_name": "pl.edu.mimuw.chatnfc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1007211270652-q4iridbu3dv95t2kptvo5op2oikd3e9q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pl.edu.mimuw.chatnfc",
+            "certificate_hash": "e0021cc5afc14f1975199168be92dfa1b8cf4ab9"
+          }
+        },
+        {
+          "client_id": "1007211270652-gieikp86n1c7s6nci1kifqfbuo2peeid.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNWpa_bBTE0o9tATcp7onoEEvbw-TaihU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1007211270652-gieikp86n1c7s6nci1kifqfbuo2peeid.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

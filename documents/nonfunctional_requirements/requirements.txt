@@ -1,0 +1,44 @@
+﻿Podstawowe założenia, dotyczące poniższych obliczeń:
+- Docelowo będzie 100 000 użytkowników
+- Każdy użytkownik wysyła ok. 200 wiadomości tekstowych dziennie oraz 10 zdjęć
+- Okno czasowe wysyłania wiadomości to 12h godzin w ciągu dnia
+- https://firebase.google.com/pricing/ - cennik usług Firebase
+
+Niezawodność:
+- Błąd uruchomienia aplikacji / komunikacji z bazą danych (nie z winy użytkownika) nie powinien zdarzać się częściej niż raz na 10 000 operacji, może wynikać np. z błędu połączenia lub wewnętrznego błędu autoryzacji Firebase, powinien być automatycznie naprawiony przez ponowne wysłanie requesta w razie niepowodzenia.
+- Należy zadbać o prowadzenie regularnego backupu zawartości bazy danych, z maksymalnym odstępem czasowym 1 tygodnia między kolejnymi kopiami zapasowymi.
+- Użytkownik powinien mieć możliwość zgłaszania przypadków nieprawidłowego działania aplikacji poprzez wysłanie automatycznie generowanego raportu o błędzie do administracji całego systemu.
+
+Narzut pamięci, pojemność:
+- Zgodnie z przyjętymi założeniami każda wiadomość ma średnio: (200 * 60B + 10 * 3000B) / 210 = 200B, przy czym zakładamy, że wiadomość teksowa ma średnio 60B, natomiast zdjęcie 3000B.
+Wliczając w to narzut kryptograficzny oraz koszt obsługi wiadomości: HMAC - 32B, IV - 16B, ID - 8B dostajemy w sumie średnio 256B na wiadomość.
+Daje to 256B * 210 = 53760B = 54kB na użytkownika dziennie, czyli 54kB * 100 000 = 5,4GB dziennego zapotrzebowania na wszystkich użytkowników. Firebase w płatnym planie umożliwia taki plan wykorzystania.
+
+Wykorzystanie bazy danych:
+- Zgodnie z powyższymi założeniami mamy 5,4GB / (12 * 60 * 60s) = 124kB/s danych przekazywanych przez serwer. Daje to około czterokrotnie więcej z uwzględnieniem dwukierunkowości oraz dodatkowych innych narzutów i jest bez problemu wspierane przez Firebase w odpowiednim planie wykorzystania.
+- Firebase w planie płatnym zapewnia wsparcie wraz z rosnącą liczbą użytkowników nawet do 100 000 jednoczesnych zapytań do realtime database.
+Liczba zapytań na sekundę u nas będzie to 100 000 * 210 zapytań / (12 * 60 * 60s) = 500 zapytań / s.
+- W razie zwiększenia liczby użytkowników firebase oferuje dodatkowe płatne plany wykorzystania. 
+
+Bezpieczeństwo:
+- Wiadomości użytkowników oraz przesyłane załączniki muszą być zabezpieczone przed nieuprawnionym dostępem; w szczególności, nie mogą być przechowywane w postaci plaintekstu.
+- Baza danych ma trzymać jedynie informacje niezbędne do autentykacji użytkowników oraz kopie zapasowe zaszyfrowanych wiadomości (szyfrowanie end-to-end)
+- Całość danych wymienianych na linii klient-serwer powinna być szyfrowana zgodnie z nowoczesnymi standardami (AES, ECDH, HMAC-SHA256)
+- Wymagane jest, aby transkrypt komunikacji nie ujawniał żadnych potencjalnie wrażliwych informacji o tożsamości rozmówców / treści rozmowy.
+
+(Szczegóły techniczne w załączonym protokole bezpieczeństwa)
+
+Wydajność i wspieralność:
+- Rejestracja użytkownika powinna przebiegać natychmiast, nowe konto ma stać się gotowe do użytku już z chwilą wprowadzenia danych osobowych i potwierdzenia zamiaru rejestracji.
+- Komunikacja z serwerem oraz przetworzenie odpowiedzi nie powinno zajmować więcej niż kilka (4-5) sekund przy stabilnym połączeniu; priorytetem jest, aby użytkownik nie odczuwał narzutów czasowych utrudniających interakcję z aplikacją.
+- Należy przeprowadzić denormalizację bazy danych i nie przechowywać danych redundantnych.
+- Protokoły szyfrowania nie mogą wprowadzać nadmiernego narzutu czasowego, także dla dużych danych.
+- Należy zapewnić regularną kontrolę workloadu oraz rozmiaru bazy danych, korzystając z narzędzia Google Analytics for Firebase.
+
+Estetyka i warstwa wizualna:
+- Interfejs aplikacji musi być prosty w obsłudze, tzn. wykonanie dowolnej akcji nie powinno wymagać przejścia przez więcej niż pięć różnych ekranów aktywności.
+- Należy zadbać o jednolity wygląd aplikacji na urządzeniach mobilnych różnego typu (telefon komórkowy, tablet), dla różnych wymiarów i rozdzielczości ekranu oraz różnych wersji systemu Android.
+
+Wymagania prawne:
+- Podczas instalacji użytkownik powinien zostać powiadomiony o możliwości łączenia się z Internetem oraz wykorzystania technologii NFC przez aplikację.
+- System nie może w sposób niejawny gromadzić w bazie danych dodatkowych informacji o użytkownikach, z wyjątkiem danych stricte analitycznych związanych z interakcją użytkownik-Firebase.

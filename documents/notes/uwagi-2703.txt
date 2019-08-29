@@ -1,0 +1,8 @@
+wymagania pozafunkcjonalne: dobieramy wg specyfiki projektu,
+- np. liczba równolegle obsługiwanych użytkowników,
+liczba przetwarzanych żądań w jednostce czasu,
+- stosujemy konkretne metryki, np. response time, przyrost danych,
+rozmiar backupów, wspieralność starszych wersji
+--> na podstawie tych wymagań dobieramy testy.
+- cały czas monitorować wydajność
+- przykładowe wymaganie: szyfrowanie wiadomości (bezpieczeństwo)

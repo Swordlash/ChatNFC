@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="pl.edu.mimuw.chatnfc">
+
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature
+        android:name="android.hardware.nfc"
+        android:required="true" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <application
+        android:name=".ui.UnificApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".ui.WelcomeScreen"
+            android:label="@string/title_activity_welcome_screen" />
+        <activity
+            android:name=".ui.ActivityRegister"
+            android:label="@string/app_name"
+            android:parentActivityName=".ui.WelcomeScreen">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.WelcomeScreen" />
+        </activity>
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:label="@string/app_name"
+            android:parentActivityName=".ui.MenuActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MenuActivity" />
+        </activity>
+        <activity
+            android:name=".ui.MenuActivity"
+            android:label="@string/app_name">
+
+            <!-- <meta-data -->
+            <!-- android:name="android.support.PARENT_ACTIVITY" -->
+            <!-- android:value=".ActivityRegister" /> -->
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <!-- <activity android:name=".sec.ActivityLogin" /> -->
+        <activity
+            android:name=".ui.ActivityLogin"
+            android:parentActivityName=".ui.WelcomeScreen" />
+        <!-- <activity android:name=".SettingsActivity"></activity> -->
+        <activity
+            android:name=".ui.ProfileActivity"
+            android:parentActivityName=".ui.MenuActivity" />
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat" />
+        <activity
+            android:name=".ui.ChatActivity"
+            android:parentActivityName=".ui.MenuActivity" />
+        <activity
+            android:name=".ui.ActivityAddContactNFC"
+            android:parentActivityName=".ui.MenuActivity" />
+        <activity
+            android:name=".ui.ActivityDisplayAddContactNFC"
+            android:label="NFC Data Display">
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.ImageActivity"></activity>
+    </application>
+
+</manifest>

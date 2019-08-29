@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome">Witaj w aplikacji Unific</string>
+    <string name="login">Posiadam już konto</string>
+    <string name="register">Stwórz nowe konto</string>
+    <string name="login_action">Logowanie</string>
+    <string name="login_progress">Trwa logowanie...</string>
+    <string name="login_button">Zaloguj</string>
+    <string name="login_wait">Proszę czekać.</string>
+    <string name="login_error">Nieprawidłowy login lub hasło.</string>
+    <string name="register_action">Rejestracja</string>
+    <string name="register_top">Załóż nowe konto</string>
+    <string name="register_login">Login</string>
+    <string name="register_email">Adres e-mail</string>
+    <string name="register_name">Imię</string>
+    <string name="register_surname">Nazwisko</string>
+    <string name="register_password">Hasło</string>
+    <string name="register_passwordrep">Wpisz ponownie hasło</string>
+    <string name="error_blank_login">Login nie może być pusty.</string>
+    <string name="error_short_password">Hasło powinno mieć co najmniej 6 znaków.</string>
+    <string name="error_invalid_email">Nieprawidłowy e-mail.</string>
+    <string name="error_blank_name">Imię nie może być puste.</string>
+    <string name="error_blank_surname">Nazwisko nie może być puste.</string>
+    <string name="error_blank_password">Hasło nie może być puste.</string>
+    <string name="error_diff_passwords">Wprowadzone hasła nie zgadzają się.</string>
+    <string name="register_loading">Trwa rejestracja...</string>
+    <string name="register_wait">Proszę czekać - zakładamy Twoje konto.</string>
+    <string name="register_success">Rejestracja przebiegła pomyślnie!</string>
+    <string name="register_failure">Błąd podczas rejestracji. Spróbuj ponownie.</string>
+    <string name="contacts">Kontakty</string>
+    <string name="messages">Wiadomości</string>
+    <string name="settings">Ustawienia</string>
+    <string name="logout">Wyloguj</string>
+    <string name="no_contacts">Nie masz żadnych znajomych :(</string>
+</resources>

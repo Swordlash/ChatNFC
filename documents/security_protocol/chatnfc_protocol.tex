@@ -1,0 +1,263 @@
+\documentclass{article}
+\usepackage{polski}
+\usepackage[utf8]{inputenc}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{mathtools}
+\usepackage{relsize}
+\usepackage{geometry}
+\usepackage{enumerate}
+%\newgeometry{tmargin=3cm, bmargin=3cm, lmargin=1.5cm, rmargin=1.5cm}
+
+\renewcommand{\abstractname}{Abstrakt}
+
+\DeclareMathOperator{\AES}{AES}
+\DeclareMathOperator{\HMAC}{HMAC}
+
+\begin{document}
+
+\title{Protokoły bezpieczeństwa aplikacji UNIFIC}
+\author{Mateusz Goślinowski}
+\date{}
+\maketitle
+\clearpage
+
+
+
+\begin{abstract}
+Ten dokument zawiera opis protokołu bezpieczeństwa aplikacji UNIFIC, przede wszystkim
+założenia dotyczące anonimowości, szyfrowania i odzyskiwania danych oraz sposób realizacji
+tych założeń przez oprogramowanie serwera i klienta. \\
+
+Szczególny nacisk kładę na opisanie poszczególnych procedur, wymienianych danych i wykorzystywanych
+protokołów kryptograficznych.
+
+\vbox to 100 pt{}
+
+\begin{center}
+\textbf{Używane w tekście skróty:}
+\end{center}
+\begin{enumerate}
+\item \textbf{AES:} \quad Advanced Encryption Standard, schemat szyfrowania kluczem symetrycznym. W projekcie będzie używany
+z kluczem 256 bitowym, w trybie CTR z wyrównaniem bajtów w standardzie PKCS \#5 oraz w trybie
+GCM (bez wyrównania bajtów).
+
+\item \textbf{DH:} \quad Protokół wymiany klucza Diffiego - Hellmana. W projekcie używany w standardzie Elliptic Curve Diffie - Hellman. Używana krzywa 
+eliptyczna to NIST P-521.
+
+\item \textbf{HMAC:} \quad Protokół autentykacji wiadomości, korzystający wewnętrznie z kryptograficznej funkcji hashującej
+(w projekcie to SHA-256) i ustalonego wcześniej klucza. W projekcie używany przez użytkowników do weryfikacji przychodzących
+wiadomości pod kątem ich autentyczności. 
+
+\item \textbf{PBKDF2:} \quad Password-Based Key Derivation Function, protokół wyprowadzania klucza symetrycznego z podanego przez
+użytkownika hasła. Produkcja klucza odbywa się poprzez wielokrotne (w projekcie 25000-krotne) zastosowywanie funkcji pseudolosowej
+(w projekcie HMAC-SHA-256) do podanego przez użytkownika ciągu znaków, wzbogaconego o losowe ziarno. W efekcie produkowany
+jest 128- lub 256- bitowy klucz symetryczny AES. W poniższym dokumencie wyrażenie'' zaszyfrowane hasłem'' oznaczać będzie ''zaszyfrowane
+algorytmem AES (jak wyżej), z kluczem wyprowadzonym z hasła użytkownika poprzez algorytm PBKDF2''.  
+\end{enumerate}
+\end{abstract}
+
+\clearpage
+
+\tableofcontents
+\clearpage
+
+\section{Założenia}
+
+\subsection{Wymagania ogólne:}
+
+UNIFIC ma być w pełni bezpieczną i w pełni anonimową aplikacją do komunikowania się z najbliższymi
+znajomymi i rodziną. Ma za zadanie zapewnić dyskrecję wymiany danych przy jednoczesnej szybkości
+i niezawodności. Podstawowe założenia składają się więc na następujące główne punkty:
+
+\begin{itemize}
+\item \textbf{{\large P}oufność:}\quad Serwer trzyma w bazie danych jedynie informacje niezbędne do
+autentykacji użytkowników i kopie zapasowe (zaszyfrowanych) wiadomości. W szczególności, nie powinien mieć
+możliwości odczytania lub odszyfrowania żadnych wiadomości oraz poznania żadnych informacji o użytkownikach. 
+Protokół zakłada więc \textbf{szyfrowanie end-to-end}. Serwer jedynie \emph{pośredniczy} w przesyłaniu danych między
+użytkownikami.
+
+\item \textbf{{\large B}ezpieczeństwo:} \quad Wszelkie dane wymieniane między klientem a serwerem są szyfrowane
+zgodnie z nowoczesnymi standardami (AES, ECDH, HMAC-SHA256). W szczególności, aplikacja nie zakłada istnienia
+bezpiecznego łącza pomiędzy nią a serwerem. Nawet całość transkryptu komunikacji między klientami a 
+serwerem nie ujawnia żadnych dodatkowych informacji na temat zawartości wiadomości, ani tożsamości rozmówców.
+Dodatkowo, dzięki wbudowanym procedurom autentykacji, podrobienie lub zmiana treści wiadomości również
+będzie niemożliwa.
+
+\item \textbf{{\large S}zybkość:}\quad Wymiana wiadomości między użytkownikami odbywa się w czasie rzeczywistym,
+bez zauważalnego dodatkowego nakładu związanego z szyfrowaniem. Użyte protokoły powinny więc w szczególności
+pozwalać na szybkie szyfrowanie dużej ilości danych.
+\end{itemize} 
+
+\subsection{Wymagania szczegółowe bezpieczeństwa i funkcjonalności dla poszczególnych protokołów}
+
+\subsubsection{Rejestracja}
+
+\begin{itemize}
+\item Zewnętrzny przeciwnik nie może być w stanie szybko ''zapchać'' serwera, wysyłając w sposób ciągły zapytania
+o rejestrację nowych osób. W celu weryfikacji faktycznej chęci rejestracji stosowany może być krótki test proof of work. Można też serwerowo ograniczyć częstotliwość zapytań np. z jednego adresu IP.
+
+\item Po wykonaniu protokołu użytkownik i serwer powinni mieć ustalony wspólny sekret, służący do późniejszej komunikacji, oraz awaryjną drogę odzyskiwania konta. Podsłuchujący przeciwnik nie może mieć o nich żadnych istotnych informacji. Dodatkowo użytkownikowi zostaje przypisane
+unikalne $uid$.
+\end{itemize}
+
+\subsubsection{Dodawanie nowych kontaktów}
+
+\begin{itemize}
+\item Po wykonaniu protokołu obaj klienci powinni mieć ustalone (różne!) klucze do wzajemnej komunikacji oraz autentykacji wiadomości.
+
+\item Zewnętrzny przeciwnik nie powinien być w stanie zaingerować w protokół z zewnątrz, w szczególności podszyć się pod drugą stronę
+lub podsłuchać jakiekolwiek informacje. Po części pomaga w tym sama specyfikacja NFC, jako protokołu komunikacji o zaięgu kilkunastu cm.
+
+\item Serwer powinien być powiadomiony o zainicjowaniu komunikacji.
+
+\item Klucze służące do komunikacji powinny być przechowywane w bezpiecznym miejscu na urządzeniu, aby po przechwyceniu urządzenia
+przez osobę trzecią klucze pozostawały przed nim ukryte.
+\end{itemize}
+
+\subsubsection{Wysyłanie wiadomości}
+
+\begin{itemize}
+\item Przesyłane wiadomości muszą być nie do odszyfrowania przez kogokolwiek oprócz nadawcy i odbiorcy (w szczególności
+przez serwer, dostawcę telefonu czy przeciwnika podsłuchującego / ingerującego w komunikację między klientami a serwerem). 
+
+\item Wiadomości muszą być weryfikowalne. Adresat musi mieć pewność, że nadawca rzeczywiście wysłał określoną wiadomość,
+i że wysłał ją dokładnie w takiej treści, w jakiej ona przyszła. Dodatkowo, powinny być niemożliwe ataki typu \emph{replay}, 
+w których przeciwnik wysyła do którejś ze stron kopię transkryptu poprzedniej komunikacji, aby została ponownie przesłana 
+taka sama wiadomość. 
+
+\item Serwer powinien przyjmować wiadomości jedynie pomiędzy połączonymi kontaktami parami użytkowników.
+\end{itemize}
+
+\subsubsection{Przechowywanie danych}
+
+\begin{itemize}
+\item Wszelkie informacje, które nie dotyczą wiadomości, takie jak status użytkownika, imię czy nazwisko (potrzebne do
+zainstalowania aplikacji na innym urządzeniu) będą przechowywane na serwerze w formie zaszyfrowanej hasłem użytkownika.
+Jednocześnie użytkownik może wyrazić również zgodę i chęć na przechowywanie na serwerze swoich kluczy, oczywiście
+również zaszyfrowanych hasłem. Ułatwi to przenoszenie aplikacji z telefonu na telefon, ale za cenę bezpieczeństwa,
+o czym użytkownik musi być explicite poinformowany.
+ 
+\end{itemize}
+
+\subsubsection{Odzyskiwanie konta i kluczy}
+
+\begin{itemize}
+\item W przypadku zgubienia hasła dostępu do konta, aplikacja powinna udostępniać metody odzyskiwania konta. Użytkownik,
+chcący odzyskać konto, powinien prawidłowo podać uprzednio ustalone dane odzyskiwania (np. email, pytanie pomocnicze etc).
+
+\item Podszycie się pod jakiegokolwiek użytkownika w celu uzyskania dostępu do jego konta poprzez system odzyskiwania
+musi być niemożliwe.
+
+\item W miarę możliwości serwer może, jak zostało to wspomniane powyżej, udostępniać określone miejsce w bazie danych, w którym użytkownicy mogą
+zapisywać swoje klucze, zaszyfrowane własnymi hasłami. W przypadku zagubienia hasła przez użytkownika, klucze te są nie
+do odzyskania poprzez serwer. 
+
+\item Aplikacja powinna udostępniać możliwość renegocjacji lub przywrócenia kluczy z poszczególnymi rozmówcami w przypadku
+ich utraty (np. po reinstalacji aplikacji). Preferowanym sposobem jest ponowne połączenie z konkretnymi osobami,
+gdyż procedura ta przeprowadzana poprzez nieuczciwy serwer może potencjalnie prowadzić do ujawnienia kluczy serwerowi
+(serwer jako man-in-the-middle).
+\end{itemize}
+
+\section{Implementacja}
+
+\subsection{Rejestracja}
+
+Google Firebase udostępnia system kontrolowanej autentykacji i rejestracji użytkowników przy wykorzystaniu większości
+popularnych sposobów logowania. W aplikacji używana będzie rejestracja poprzez adres email, login i hasło. 
+Każdemu użytkownikowi przypisywany jest podczas rejestracji na serwerze automatycznie identyfikator. Bezpieczeństwo
+tego protokołu opiera się na bezpieczeństwie wbudowanych funkcji Firebase.
+
+
+%\subsubsection{Protokół teoretyczny}
+%Każdy użytkownik, chcący korzystać z aplikacji, musi najpierw przejść procedurę rejestracji, po której uzyska
+%swój unikalny \textbf{identyfikator użytkownika} $uid$ oraz klucze służące do szyfrowanej komunikacji z serwerem. Procedura wygląda następująco:
+%
+%\begin{enumerate}
+%\item Nowy użytkownik $X$ wysyła do serwera zapytanie, że chce się zarejestrować. Serwer tworzy dla niego
+%tymczasowy identyfikator $tid$, po czym wysyła do użytkownika ten identyfikator wraz z krótką zagadką w formie
+%\emph{proof of work}.
+%
+%\item Użytkownik rozwiązuje zagadkę, po czym odsyła to rozwiązanie do serwera. Serwer weryfikuje odpowiedź i jeśli
+%się ona zgadza, wysyła wiadomość o prawidłowej rejestracji. $tid$ uprawomocnia się (staje się $uid$, trwałym identyfikatorem użytkownika).
+%
+%\item Użytkownik (identyfikujacy się już poprzez $uid$) i serwer przeprowadzają protokół DH w celu ustalenia
+%wspólnego klucza symetrycznego do komunikacji.
+%
+%\item Serwer i użytkownik wymieniają pozostałe informacje, takie jak zapasowy email potrzebny do odzyskiwania konta, w sposób szyfrowany.
+%\end{enumerate}
+
+
+
+\subsection{Dodawanie nowych kontaktów}
+
+Dodawanie kontaktu jest bardzo prostą operacją. Osoby chcące dodać siebie do kontaktów, zbliżają telefony. Poprzez NFC
+i protokół DH użytkownicy ustalają klucze do komunikacji oraz do autentykacji, po czym powiadamiają serwer o dodaniu siebie nawzajem
+do listy swoich kontaktów. Po uzyskaniu
+pozytywnej odpowiedzi przez serwer, użytkownicy wymieniają poprzez serwer wiadomości próbne. Jeśli zakończy się to powodzeniem,
+dodawanie kontaktu uznaje się za zakończone.\\
+
+Klucze powinny być przechowywane w bezpiecznym miejscu w urządzeniu tak, aby wszelkie próby wyekstrahowania ich po kradzieży
+telefonu były nieudane (np. wykorzystując wbudowany w system Android \emph{keystore}).
+
+\subsection{Zmiana danych użytkownika}
+
+Użytkownik, chcący zmienić swoje dane, takie jak imię, nazwisko czy status, wysyła je w formie zaszyfrowanej hasłem do serwera.
+Jednocześnie do wszystkich znajomych wysyłana jest poprzez serwer specjalna wiadomość konfiguracyjna (która nie wyświetli
+się im w powiadomieniach), zawierająca w swojej treści nowe imię, nazwisko, status oraz link lub całość zdjęcia profilowego. Szczegóły
+na temat wysyłania danych do innych użytkowników poniżej.
+
+\subsection{Wysyłanie wiadomości}
+
+Implicite zakładam, że komunikacja między klientami a serwerem jest szyfrowana poprzez ustalone podczas rejestracji klucze. Niech
+$sk$ będzie ustalonym między użytkownikami A a B kluczami do szyfrowania wiadomości, a $mk$ kluczami do autentykacji.
+Oznaczmy treść wiadomości przez $M$, oraz niech $\AES_{key}(iv, m)$, $\HMAC_{key}(m)$ będą odpowiednimi funkcjami do szyfrowania i 
+tagowania wiadomości.
+
+\begin{enumerate}
+\item Użytkownik A wybiera nieużyte wcześniej do komunikacji z B $ID$ wiadomości i wyprowadza z niego wektor inicjalizacyjny $IV$,
+którego użyje do zaszyfrowania wiadomości poprzez AES. IV musi być całkowicie unikalne dla całości komunikacji z danym rozmówcą.
+
+\item Użytkownik A przygotowuje do wysłania pakiet z wiadomością, który w niezmienionej formie zostanie dostarczony do B
+poprzez serwer. Składa się on z:
+
+$$\left\{\textrm{IV},\, \textrm{ID}, \,\HMAC_{mk}(IV\,\parallel\,ID\,\parallel\,\AES_{sk}(IV, M)), \,\AES_{sk}(IV, M)\right\}$$
+
+gdzie $a \parallel b$ jest konkatenacją $a$ i $b$.
+
+\item A wysyła do serwera paczkę. Serwer ją odszyfrowuje, sprawdza czy B jest w kontaktach A i wysyła do A informację, że wiadomość
+została wysłana. Serwer zapisuje paczkę na dysku, po czym powiadamia B, że jest do odebrania wiadomość (poprzez Firebase Cloud Messaging).
+
+\item B odszyfrowuje paczkę. Następnie weryfikuje, czy czy $\HMAC$ zgadza się z resztą wiadomości oraz 
+czy $ID$ wiadomości nie pojawiło się już wcześniej. Jeśli wszystko jest w porządku, odszyfrowuje wiadomość i wysyła do serwera, że wiadomość
+została odczytana. Ten informuje o tym fakcie A.
+\end{enumerate} 
+
+\subsection{Odzyskiwanie konta i kluczy}
+
+Może się tak zdarzyć, że użytkownik straci wszelkie swoje klucze, np. odinstalowując aplikację lub zmieniając telefon. W przypadku
+ponownej instalacji użytkownik może zadeklarować, że był już zarejestrowany i podać swój adres mailowy. Jeśli zgadza się on z adresem pewnego użytkownika, to zostaną na niego wysłane dane potrzebne aplikacji do ponownego zalogowania. Po ponownym
+połączeniu zostanie też przywrócony dostęp do (zaszyfrowanych) wiadomości.\\
+
+Jednak będą one nie do odczytania, bo użytkownik po resecie konta nie ma też kluczy, które ustalił ze znajomymi. W tym przypadku
+istnieją trzy opcje:
+
+\begin{itemize}
+\item Użytkownik mógł skorzystać wcześniej z opcji zapisywania kluczy w chmurze UNIFIC. Będzie to miejsce, w którym składowane
+będą wszystkie klucze użytkownika, oczywiście zaszyfrowane uprzednio przez niego znanym tylko jemu hasłem.
+
+\item Załóżmy jednak, że użytkownik tego hasła nie pamięta. Wówczas może wygenerować pary (klucz publiczny, klucz prywatny) RSA
+i wysłać klucz publiczny do serwera, który poprosi jego znajomych, aby zaszyfrowali tym kluczem ich klucze symetryczne,
+i mu je odeśle. Następnie użytkownik odszyfruje te klucze swoim kluczem prywatnym.
+
+\item Załóżmy znów, że użytkownicy nie ufają jednak serwerowi (co, jeśli serwer sam sobie wygenerował pary kluczy i w ten sposób
+chce poznać klucze do wiadomości użytkowników?). Wówczas nie pozostaje nic innego, niż ponowne parowanie użytkowników poprzez
+zbliżenie telefonów. Aplikacja umożliwi mechanizm transportu klucza podczas zbliżenia, jeśli zgodzi się na to drugi użytkownik.
+\end{itemize}
+
+Co jednak, jeśli obaj użytkownicy naraz zgubią klucze? Wtedy wiadomości są bezpowrotnie tracone. Jest to cena za szyfrowanie
+end-to-end, ponieważ serwer w żadnej chwili nie posiada żadnej informacji dającej dostęp do wiadomości lub kluczy.
+
+\end{document}

@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name" translatable="false">Unific</string>
+    <string name="title_activity_welcome_screen" translatable="false">Unific</string>
+
+    <!-- WelcomeScreen -->
+    <string name="welcome">Welcome to Unific\nChat App</string>
+    <string name="login">Already have account</string>
+    <string name="register">Create new account</string>
+
+    <!-- ActivityLogin -->
+    <string name="login_action">Logging in</string>
+    <string name="login_progress">Logging user...</string>
+    <string name="login_button">Log in</string>
+    <string name="login_wait">Please wait.</string>
+    <string name="login_error">Wrong login or password.</string>
+
+    <!-- ActivityRegister -->
+    <string name="register_action">Register</string>
+    <string name="register_top">Create a new account</string>
+    <string name="register_email">E-mail address</string>
+    <string name="register_name">Name</string>
+    <string name="register_surname">Surname</string>
+    <string name="register_password">Password</string>
+    <string name="register_passwordrep">Retype password</string>
+
+    <string name="error_blank_login">Login cannot be blank.</string>
+    <string name="error_short_password">Password should be at least 6 characters long.</string>
+    <string name="error_invalid_email">Invalid e-mail format.</string>
+    <string name="error_blank_name">Name cannot be blank.</string>
+    <string name="error_blank_surname">Surname cannot be blank.</string>
+    <string name="error_diff_passwords">The entered passwords do not match.</string>
+    <string name="error_blank_password">Password cannot be blank.</string>
+
+    <string name="register_loading">Registering user...</string>
+    <string name="register_wait">Please wait while we create your account.</string>
+    <string name="register_success">Registration successfully completed!</string>
+    <string name="register_failure">Registration failed. Please try again.</string>
+
+    <!-- MenuActivity -->
+    <string name="contacts">Contacts</string>
+    <string name="messages">Messages</string>
+    <string name="settings">Settings</string>
+    <string name="logout">Log out</string>
+
+    <!-- ContactsFragment -->
+    <string name="no_contacts">You have no contacts</string>
+    <string name="any_contacts">Your contacts:</string>
+</resources>

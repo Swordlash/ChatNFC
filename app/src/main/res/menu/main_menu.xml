@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/main_menu_settings"
+        android:title="SETTINGS" />
+    <item
+        android:id="@+id/main_menu_nfc"
+        android:title="NFC" />
+    <item
+        android:id="@+id/main_menu_log_out"
+        android:title="LOG OUT" />
+
+</menu>

@@ -1,0 +1,16 @@
+Diagram przypadków użycia (specyfikacja funkcjonalna)
+
+- ma postać diagramu
+- uporządkowany opis, co system ma robić: pokazanie interakcji usera z systemem/aplikacją.
+- nie użytkownik, lecz tzw. aktor (jednostka kontaktująca się z systemem, to może być osoba lub system zewnętrzny),
+graficznie jako "ludzik" na diagramie UML
+- warto pogrupować użytkowników wg ról
+- czynności wewnątrz elipsy (np. "przeglądaj produkty", "złóż zamówienie")
+- mogą być czynności, dla których zachodzi interakcja aktorów (np. klient z PayPalem podczas zapłaty)
+
+
+Scenariusze użycia:  (później)
+
+- opis słowny w punktach
+- odpowiedzialność: który aktor co konkretnie robi (np. "Klient podaje dane karty kredytowej: numer, kod, a system przekierowuje go do PayPala")
+- unikać form bezosobowych
